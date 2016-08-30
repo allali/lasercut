@@ -64,153 +64,30 @@ class PlateJoinEffect(inkex.Effect):
         height = self.unittouu(str(self.options.height)+self.options.unit)
         thickness = self.unittouu(str(self.options.thickness)+self.options.unit)
 
-        points=lc.make_plate(width,self.options.iwidth,height,self.options.iheight,
-                             thickness,self.options.wsplit,self.options.hsplit,
-                             self.options.bottom,self.options.bottomshift,
-                             self.options.top,self.options.topshift,
-                             self.options.left,self.options.leftshift,
-                             self.options.right,self.options.rightshift)
-        
-        # wsplit=self.options.wsplit * 2+1
-        # hsplit=self.options.hsplit * 2+1
-
-        # if self.options.iwidth==False:
-        #     width-=thickness*2
-        # if self.options.iheight==False:
-        #     height-=thickness*2
-        
-        # wstep=width/wsplit
-        # hstep=height/hsplit        
-        # points= []
-        # x=0
-        # y=0
-        # direction = 1
-        # if self.options.bottom in "f":
-        #     direction=-1
-        #     y=thickness
-
-        # if self.options.bottomshift:
-        #     y+=thickness
-        # if self.options.leftshift:
-        #     x+=thickness
-            
-        # if self.options.bottom=='-':            
-        #     points.append((x,y))
-        #     x+=wsplit*wstep
-        #     if self.options.leftshift:
-        #         x-=thickness
-        #     if self.options.rightshift:
-        #         x-=thickness
-        #     points.append((x,y))
-        # else:
-        #     for i in range(wsplit):                 
-        #         points.append((x,y))
-        #         if i==0 and self.options.leftshift:   
-        #             x=x+wstep-thickness
-        #         elif i==wsplit-1 and self.options.rightshift:
-        #             x=x+wstep-thickness
-        #         else:
-        #             x=x+wstep
-        #         points.append((x,y))
-        #         y=y+direction*thickness
-        #         direction*=-1
-        #     y=y+direction*thickness
-            
-        # if self.options.right == self.options.bottom:
-        #     direction*=-1
-        # if self.options.bottom=='-':
-        #     if self.options.right=='f':
-        #         direction=-1
-        #     else:
-        #         direction=1
-        # if self.options.right == '-':
-        #     points.append((x,y))
-        #     y=y-hstep*hsplit
-        #     if self.options.bottomshift:
-        #         y+=thickness
-        #     if self.options.topshift:
-        #         y+=thickness
-        #     points.append((x,y))
-        # else:                
-        #     for i in range(hsplit):
-        #         points.append((x,y))
-        #         if i==0 and self.options.bottomshift:
-        #             y=y-hstep+thickness
-        #         elif i==hsplit-1 and self.options.topshift:
-        #             y=y-hstep+thickness
-        #         else:
-        #             y=y-hstep
-        #         points.append((x,y))
-        #         x=x+direction*thickness
-        #         direction*=-1            
-        #     x=x+direction*thickness
-        # if self.options.top != self.options.right:
-        #     direction*=-1
-        # if self.options.right=='-':
-        #     if self.options.top=='m':
-        #         direction=-1
-        #     else:
-        #         direction=1
-        # if self.options.top == '-':
-        #     points.append((x,y))
-        #     x=x-wstep*wsplit
-        #     if self.options.rightshift:
-        #         x+=thickness
-        #     if self.options.leftshift:
-        #         x+=thickness
-        #     points.append((x,y))            
-        # else:
-        #     for i in range(wsplit):
-        #         points.append((x,y))
-        #         if i==0 and self.options.rightshift:
-        #             x=x-wstep+thickness
-        #         elif i==wsplit-1 and self.options.leftshift:
-        #             x=x-wstep+thickness
-        #         else:
-        #             x=x-wstep
-        #         points.append((x,y))
-        #         y=y+direction*thickness
-        #         direction*=-1            
-        #     y=y+direction*thickness
-        # if self.options.left == self.options.top:
-        #     direction*=-1
-        # if self.options.top=='-':
-        #     if self.options.left=='m':
-        #         direction=-1
-        #     else:
-        #         direction=1
-        # if self.options.left == '-':
-        #     points.append((x,y))
-        #     y=y+hstep*hsplit
-        #     if self.options.topshift:
-        #         y-=thickness
-        #     if self.options.bottomshift:
-        #         y-=thickness
-        #     points.append((x,y))                
-        # else:
-        #     for i in range(hsplit):
-        #         points.append((x,y))
-        #         if i==0 and self.options.topshift:
-        #             y=y+hstep-thickness
-        #         elif i==hsplit-1 and self.options.bottomshift:
-        #             y=y+hstep-thickness
-        #         else:
-        #             y=y+hstep
-        #         points.append((x,y))
-        #         x=x+direction*thickness
-        #         direction*=-1
-                
-        path = lc.points_to_svgd(points)
-
+        # Create main element
         t = 'translate(' + str(self.view_center[0]) + ',' + \
             str(self.view_center[1]) + ')'
         g_attribs = {
             inkex.addNS('label', 'inkscape'): 'Box' + str(width) + "x"+str(height),
             'transform': t}
         g = inkex.etree.SubElement(self.current_layer, 'g', g_attribs)
+        style = {'stroke': '#000000',
+                 'fill': 'none',
+                 'stroke-width': str(self.unittouu('1px'))}
 
+        # Create path
+        points=lc.make_plate((width,height),
+                             (self.options.iwidth,self.options.iheight),
+                             thickness,self.options.wsplit,self.options.hsplit,
+                             self.options.bottom,self.options.bottomshift,
+                             self.options.top,self.options.topshift,
+                             self.options.left,self.options.leftshift,
+                             self.options.right,self.options.rightshift)
+
+        path = lc.points_to_svgd(points)
+
+        
         # Create SVG Path for plate
-        style = {'stroke': '#000000', 'fill': 'none', 'stroke-width': str(self.unittouu('1px'))}
         box_attribs = {
             'style': formatStyle(style),
             'd': path}

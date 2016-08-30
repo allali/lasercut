@@ -6,8 +6,7 @@ from simplestyle import *
 
 import lc
 
-
-class FullBoxEffect(inkex.Effect):    
+class FullBoxEffect(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.OptionParser.add_option('--width', action = 'store',
@@ -24,139 +23,48 @@ class FullBoxEffect(inkex.Effect):
           help = 'thickness')
         self.OptionParser.add_option('--wsplit', action = 'store',
           type = 'int', dest = 'wsplit', default = '3',
-          help = 'horizontal splite')
+          help = 'number of horizontal splits')
         self.OptionParser.add_option('--dsplit', action = 'store',
           type = 'int', dest = 'dsplit', default = '3',
-          help = 'depth splite')
+          help = 'number of depth splits')
         self.OptionParser.add_option('--hsplit', action = 'store',
           type = 'int', dest = 'hsplit', default = '3',
-          help = 'vertical splite')
+          help = 'number of vertical splits')
         self.OptionParser.add_option('--unit', action = 'store',
           type = 'string', dest = 'unit', default = 'mm',
-          help = 'unit')        
+          help = 'unit')
         self.OptionParser.add_option('--inner', action = 'store',
           type = 'inkbool', dest = 'inner', default = 'True',
           help = 'inner')
+        self.OptionParser.add_option('--closebox', action = 'store',
+          type = 'inkbool', dest = 'closebox', default = 'True',
+          help = 'closebox')
+
     def effect(self):
         width=self.unittouu(str(self.options.width)+self.options.unit)
-        height=self.unittouu(str(self.options.height)+self.options.unit)
         depth=self.unittouu(str(self.options.depth)+self.options.unit)
+        height=self.unittouu(str(self.options.height)+self.options.unit)
         thickness=self.unittouu(str(self.options.thickness)+self.options.unit)
+        closeBox=self.options.closebox
+        innerDim=self.options.inner
 
-
-        t = 'translate(' + str(self.view_center[0]) + ',' + \
+        # Create main SVG element
+        tr= 'translate(' + str(self.view_center[0]) + ',' + \
             str(self.view_center[1]) + ')'
         g_attribs = {
             inkex.addNS('label', 'inkscape'): 'Box' + str(width) + "x"+str(height),
-            'transform': t}
+            'transform': tr }
         g = inkex.etree.SubElement(self.current_layer, 'g', g_attribs)
 
         # Create SVG Path for plate
-        style = {'stroke': '#000000', 'fill': 'none', 'stroke-width': str(self.unittouu('1px'))}
+        style = formatStyle({ 'stroke': '#000000', \
+                              'fill': 'none', \
+                              'stroke-width': str(self.unittouu('1px')) })
 
-        #make bottom plate:
-        points=lc.make_plate(width,self.options.inner,depth,self.options.inner,
-                             thickness,self.options.wsplit,self.options.dsplit,
-                             'm',False,
-                             'm',False,
-                             'm',False,
-                             'm',False)
-        
-        path = lc.points_to_svgd(points)        
-        
-        box_attribs = {
-            'style': formatStyle(style),
-            'd': path}
-        box = inkex.etree.SubElement(
-            g, inkex.addNS('path', 'svg'), box_attribs)
-        
-        #make top plate:
-        points=lc.make_plate(width,self.options.inner,depth,self.options.inner,
-                             thickness,self.options.wsplit,self.options.dsplit,
-                             'm',False,
-                             'm',False,
-                             'm',False,
-                             'm',False)
-
-        points=lc.translate_points(points,width+2*thickness,depth+2*thickness)              
-        path = lc.points_to_svgd(points)  
-
-        
-        box_attribs = {
-            'style': formatStyle(style),
-            'd': path}
-        box = inkex.etree.SubElement(
-            g, inkex.addNS('path', 'svg'), box_attribs)
-        
-        #make back plate:
-        points=lc.make_plate(width,self.options.inner,height,self.options.inner,
-                             thickness,self.options.wsplit,self.options.hsplit,
-                             'f',True,
-                             'f',True,
-                             'f',True,
-                             'm',False)
-        points=lc.translate_points(points,0,-(depth+2*thickness))
-        path = lc.points_to_svgd(points)        
-        
-        box_attribs = {
-            'style': formatStyle(style),
-            'd': path}
-        box = inkex.etree.SubElement(
-            g, inkex.addNS('path', 'svg'), box_attribs)
-        
-        #make front plate:
-        points=lc.make_plate(width,self.options.inner,height,self.options.inner,
-                             thickness,self.options.wsplit,self.options.hsplit,
-                             'f',True,
-                             'f',True,
-                             'm',False,
-                             'f',True)
-        points=lc.translate_points(points,0,height)
-        path = lc.points_to_svgd(points)        
-        
-        box_attribs = {
-            'style': formatStyle(style),
-            'd': path}
-        box = inkex.etree.SubElement(
-            g, inkex.addNS('path', 'svg'), box_attribs)
-        
-        #make left plate:
-        points=lc.make_plate(height,self.options.inner,depth,self.options.inner,
-                             thickness,self.options.hsplit,self.options.dsplit,
-                             'f',True,
-                             'm',False,
-                             'f',True,
-                             'f',True)
-        points=lc.translate_points(points,-(height)-thickness,-thickness)
-        path = lc.points_to_svgd(points)        
-        
-        box_attribs = {
-            'style': formatStyle(style),
-            'd': path}
-        box = inkex.etree.SubElement(
-            g, inkex.addNS('path', 'svg'), box_attribs)
-        
-        #make right plate:
-        points=lc.make_plate(height,self.options.inner,depth,self.options.inner,
-                             thickness,self.options.hsplit,self.options.dsplit,
-                             'm',False,
-                             'f',True,
-                             'f',True,
-                             'f',True)
-        points=lc.translate_points(points,width+thickness,0)
-        path = lc.points_to_svgd(points)        
-        
-        box_attribs = {
-            'style': formatStyle(style),
-            'd': path}
-        box = inkex.etree.SubElement(
-            g, inkex.addNS('path', 'svg'), box_attribs)
-        
-
+        lc.insert_box(g,
+                      (width, depth, height), 
+                      (self.options.wsplit,self.options.dsplit,self.options.hsplit),
+                      thickness, innerDim, closeBox, style)
 
 effect = FullBoxEffect()
 effect.affect()
-
-
-            
-        

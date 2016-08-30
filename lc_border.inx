@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Border</_name>
+  <_name>Face Border</_name>
   <id>org.ekips.filter.lc_border</id>
   <dependency type="executable" location="extensions">lc_border.py</dependency>
   <dependency type="executable" location="extensions">inkex.py</dependency>
