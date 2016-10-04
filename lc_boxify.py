@@ -42,8 +42,18 @@ class BoxifyEffect(inkex.Effect):
         if (node.tag == inkex.addNS('path','svg')):
             nodes = [simplepath.parsePath(node.get('d'))]
         if (node.tag == inkex.addNS('g','svg')):
-            nodes = [simplepath.parsePath(n.get('d'))
-                      for n in node.getchildren() ]
+            nodes = []
+            for n in node.getchildren():
+                if (n.tag == inkex.addNS('rect','svg')):
+                    x = float(n.get('x'))
+                    y = float(n.get('y'))
+                    h = float(n.get('height'))
+                    w = float(n.get('width'))
+                    nodes.append([['M', [x,y]],['L', [x+w,y]],['L', [x+w,y+h]],['L', [x,y+h]]])
+                else:
+                    nodes.append(simplepath.parsePath(n.get('d')))
+
+        inkex.debug(nodes)
         if (nodes == []):
             print >> sys.stderr,"selected object must be a path or a group of paths"
             return

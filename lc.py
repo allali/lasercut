@@ -202,6 +202,16 @@ def insert_point(elem, p, style):
         elem, inkex.addNS('path', 'svg'), box_attribs)
 
 ################################################################
+# Insert a circular point into the SVG elem
+def insert_text(elem, p, s, style):
+    text = inkex.etree.Element(inkex.addNS('text','svg'))
+    text.text = s
+    text.set('x', str(p[0]))
+    text.set('y', str(p[1]))
+    text.set('style', style)
+    elem.append(text)
+
+################################################################
 # Insert a path into the SVG elem
 def insert_path(elem, ps, style):
     path = points_to_svgd(ps)
