@@ -53,7 +53,7 @@ class BoxifyEffect(inkex.Effect):
                 else:
                     nodes.append(simplepath.parsePath(n.get('d')))
 
-        inkex.debug(nodes)
+        # inkex.debug(nodes)
         if (nodes == []):
             print >> sys.stderr,"selected object must be a path or a group of paths"
             return
