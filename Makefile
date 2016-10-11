@@ -2,4 +2,4 @@ clean:
 	rm -f *~
 
 install:
-	cp lc* $$HOME/.config/inkscape/extensions/
+	cp lc*.py lc*.inx $$HOME/.config/inkscape/extensions/

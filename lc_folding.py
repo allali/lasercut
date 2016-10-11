@@ -9,7 +9,7 @@ import simpletransform
 import simplepath
 import lc
 
-class BoxifyEffect(inkex.Effect):
+class FoldingEffect(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.OptionParser.add_option('--width', action = 'store',
@@ -66,5 +66,5 @@ class BoxifyEffect(inkex.Effect):
                     l = [(x,y - overcut), (x,y+slen + overcut)]
                     lc.insert_path(g, l, style)        
         
-effect = BoxifyEffect()
+effect = FoldingEffect()
 effect.affect()

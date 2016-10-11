@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>Update lasercut</_name>
+  <id>org.ekips.filter.lc_update</id>
+  <dependency type="executable" location="extensions">lc_update.py</dependency>
+  <dependency type="executable" location="extensions">inkex.py</dependency>
+
+  <param name="tab" type="notebook">
+    <page name="help" _gui-text="Help">
+      <_param name="help_text" type="description">This plugin is supposed to connect to the github website, tell if the current version is the latest version and then try to update to the latest version if necessary.</_param>
+    </page>
+  </param>
+
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+       <submenu _name="Laser Cut"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">lc_update.py</command>
+  </script>
+</inkscape-extension>
