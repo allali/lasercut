@@ -11,6 +11,7 @@ import simpletransform
 import lc
 import re
 
+# List of color codes used by Trotec
 acceptable_colors=['#000000','#ff0000','#0000ff','#336699','#00ffff','#00ff00','#009933','#006633','#9900cc','#ff00ff','#ff6600','#ffff00','#999933','#996633','#663300','#660066']
 
 class TrotecChecker(inkex.Effect):    
@@ -29,18 +30,18 @@ class TrotecChecker(inkex.Effect):
         self.OptionParser.add_option('--fixtransparency', action = 'store',
                                      type = 'inkbool', dest = 'fixtransparency', default = 'True',
                                      help = 'remove transparency')
+        self.OptionParser.add_option('--removefilter', action = 'store',
+                                     type = 'inkbool', dest = 'removefilter', default = 'True',
+                                     help = 'remove filter')
         
     def apply(self,node):
-        # check color, transparency and opacity        
         if 'style' in node.attrib:
-            style=node.get('style') # fixme: this will break for presentation attributes!
+            style=node.get('style') 
             if style!='':
-                #inkex.debug('old style:'+style)
                 styles=style.split(';')
                 hasStroke=False
                 hasFill=False
                 for i in range(len(styles)):
-                    #inkex.debug(styles[i])
                     s=styles[i]
                     v=s.split(':')[1]
                     if s.startswith("opacity"):
@@ -54,28 +55,37 @@ class TrotecChecker(inkex.Effect):
                         if v!="none":                            
                             hasStroke=True
                             if v not in acceptable_colors:
-                                inkex.debug("suspicious stoke color:"+v)                            
+                                inkex.debug("WANRING: suspicious stoke color:"+v)                            
                     elif s.startswith("fill:"):
                         if v!="none":
                             hasFill=True
                             if v not in acceptable_colors:
-                                inkex.debug("suspicious fill color:"+v)
+                                inkex.debug("WARNING: suspicious fill color:"+v)
                     elif s.startswith("fill-opacity"):
                         if float(v)!=1.0:
-                            inkex.debug("error with fill-opacity")
-                            styles[i]="fill-opacity:1"
+                            if self.options.fixtransparency:
+                                styles[i]="fill-opacity:1"
+                                inkex.debug("INFO: fill transparency fixed")
+                            else:
+                                inkex.debug("TODO: fill transparency issue")
                     elif s.startswith("stroke-opacity"):
                         if float(v)!=1.0:
-                            inkex.debug("error with stoke-opacity")
-                            styles[i]="stoke-opacity:1"
+                            if self.options.fixtransparency:
+                                styles[i]="stoke-opacity:1"
+                                inkex.debug("INFO: stoke transparency fixed")
+                            else:
+                                inkex.debug("TODO: stroke transparency issue")
                     elif s.startswith("filter"):
-                        styles[i]=""
-                        inkex.debug("error filter should not be used! (try to remove it)")
+                        if self.options.removefilter:
+                            styles[i]=""
+                            inkex.debug("INFO: filter removed")
+                        else:
+                            inkex.debug("TODO: filter found, should be removed")
                     elif s.startswith("stroke-width:"):
                         if self.options.fixstroke:
                             styles[i]=str(self.strokewidth)
                 if hasFill and hasStroke:
-                    inkex.debug("suspicious element that has both fill and stroke!")
+                    inkex.debug("WARNING: suspicious element that has both fill and stroke!")
                 node.set('style',";".join(styles))
 
     def recursivelyTraverse(self,nodeList):
