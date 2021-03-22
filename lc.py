@@ -312,11 +312,11 @@ def insert_box(elem, dims, splits, thickness, innerDim, closeBox, style):
 ################################################################
 # Insert holes
 #
-# dx  : width of the holes
-# dy  : thickness of the holes
+# dxy  : width and thickness of the holes
 # dir : 'n', 's', 'e', 'w'
-def insert_holes(elem, (x,y), (dx,dy),
-                 num, dir, style):
+def insert_holes(elem, xy, dxy, num, dir, style):
+    x,y = xy
+    dx,dy = dxy
     for i in range(num):
         points=[(x-dx/2,y-dy/2),(x+dx/2,y-dy/2),
                 (x+dx/2,y+dy/2),(x-dx/2,y+dy/2),
@@ -419,7 +419,7 @@ class Edge:
         if self.r_from:
             st += ", at " + str(self.r_from) + " dir=" + self.dir
         if len(self.touch) > 0:
-            st += ", touch [" + ", ".join(map(lambda (e,d): e.str_short(), self.touch)) + "]"
+            st += ", touch [" + ", ".join(map(lambda e,d: e.str_short(), self.touch)) + "]"
         if len(self.attch) > 0:
             st += ", attach [" + ", ".join(map(str, self.attch)) + "]"
         return st
